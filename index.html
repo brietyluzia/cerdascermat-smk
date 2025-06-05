@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuis Cerdas Cermat SMK</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .options label {
+      display: block;
+      padding: 10px;
+      margin-bottom: 8px;
+      background-color: #ecf0f1;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .options label:hover {
+      background-color: #dfe6e9;
+    }
+    .submit-btn {
+      background-color: #2980b9;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+    .submit-btn:hover {
+      background-color: #3498db;
+    }
+    .result {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 18px;
+      color: #27ae60;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 10px;
+        padding: 15px;
+      }
+      .submit-btn {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Kuis Cerdas Cermat SMK By Akhmad Azmi</h2>
+
+    <div id="setup">
+      <label>Pilih Kelas:</label>
+      <select id="kelas">
+        <option value="10">Kelas 10</option>
+        <option value="11">Kelas 11</option>
+        <option value="12">Kelas 12</option>
+      </select>
+
+      <label>Pilih Level:</label>
+      <select id="level">
+        <option value="1">Level 1</option>
+        <option value="2">Level 2</option>
+        <option value="3">Level 3</option>
+      </select>
+
+      <label>Pilih Kategori:</label>
+      <select id="kategori">
+        <option value="rpl">Rekayasa Perangkat Lunak</option>
+        <option value="tkj">Teknik Komputer & Jaringan</option>
+        <option value="akuntansi">Akuntansi</option>
+        <option value="umum">Pengetahuan Umum</option>
+      </select>
+
+      <button onclick="mulaiKuis()">Mulai Kuis</button>
+    </div>
+
+    <div id="quiz" style="display:none;">
+      <div class="question" id="question"></div>
+      <div id="options"></div>
+      <div id="feedback" class="feedback"></div>
+      <button onclick="jawabDanLanjut()">Jawab & Lanjut</button>
+    </div>
+
+    <div id="result" style="display:none;">
+      <h3>Skor Akhir</h3>
+      <p><span id="scoreBenar"></span> Benar</p>
+      <p><span id="scoreSalah"></span> Salah</p>
+      <p><span id="scoreTotal"></span> dari <span id="scoreJumlah"></span> soal</p>
+      <button onclick="ulang()">Ulangi Kuis</button>
+    </div>
+  </div>
+
+  <script>
+    // Data soal lengkap langsung dalam pemrograman
+    const soal = {
+      10: {
+        1: {
+          rpl: [
+            { question: "Apa singkatan dari HTML?", options: ["HyperText Markup Language", "HighText Machine Language", "Hyperloop Machine Language", "None of the above"], answer: "HyperText Markup Language" },
+            { question: "Bahasa pemrograman untuk web dinamis?", options: ["HTML", "CSS", "JavaScript", "Photoshop"], answer: "JavaScript" },
+            { question: "Apa itu CSS?", options: ["Bahasa pemrograman", "Bahasa styling web", "Database", "Server"], answer: "Bahasa styling web" },
+            { question: "Apa fungsi JavaScript?", options: ["Membuat website statis", "Mempercantik tampilan", "Membuat website dinamis", "Menulis dokumen"], answer: "Membuat website dinamis" },
+            { question: "Tag HTML untuk paragraf?", options: ["p", "div", "span", "a"], answer: "p" },
+            { question: "Tag HTML untuk gambar?", options: ["img", "image", "pic", "src"], answer: "img" },
+            { question: "Apa itu Framework?", options: ["Kerangka kerja pemrograman", "Bahasa pemrograman", "Database", "Server"], answer: "Kerangka kerja pemrograman" },
+            { question: "Bahasa backend populer?", options: ["Python", "HTML", "CSS", "Photoshop"], answer: "Python" },
+            { question: "Apa itu API?", options: ["Antarmuka pemrograman aplikasi", "Sistem operasi", "Bahasa pemrograman", "Database"], answer: "Antarmuka pemrograman aplikasi" },
+            { question: "Fungsi CSS?", options: ["Membuat website dinamis", "Memperindah tampilan website", "Menyimpan data", "Menulis kode"], answer: "Memperindah tampilan website" },
+            { question: "Apa itu DOM?", options: ["Dokumen Object Model", "Database Online Model", "Data Object Model", "Digital Object Manager"], answer: "Dokumen Object Model" },
+            { question: "Bahasa pemrograman yang digunakan di browser?", options: ["JavaScript", "Python", "Java", "C++"], answer: "JavaScript" },
+            { question: "Tag untuk link di HTML?", options: ["a", "link", "href", "url"], answer: "a" },
+            { question: "Apa itu responsive design?", options: ["Desain web yang responsif terhadap ukuran layar", "Desain grafis", "Bahasa pemrograman", "Server"], answer: "Desain web yang responsif terhadap ukuran layar" },
+            { question: "Apa itu Git?", options: ["Sistem kontrol versi", "Bahasa pemrograman", "Database", "Server"], answer: "Sistem kontrol versi" },
+            { question: "Apa itu localhost?", options: ["Komputer lokal", "Server internet", "Bahasa pemrograman", "Database"], answer: "Komputer lokal" },
+            { question: "Bahasa pemrograman yang bersifat scripting?", options: ["JavaScript", "C++", "Java", "Pascal"], answer: "JavaScript" },
+            { question: "Apa itu IDE?", options: ["Integrated Development Environment", "Database", "Server", "Bahasa pemrograman"], answer: "Integrated Development Environment" },
+            { question: "Apa itu debugging?", options: ["Proses mencari kesalahan kode", "Menulis kode baru", "Menghapus data", "Membuat tampilan"], answer: "Proses mencari kesalahan kode" },
+            { question: "Apa itu variable?", options: ["Tempat penyimpanan data", "Fungsi", "Program", "Database"], answer: "Tempat penyimpanan data" },
+          ],
+          tkj: [
+            { question: "Apa fungsi router dalam jaringan?", options: ["Menghubungkan jaringan", "Memutus koneksi", "Menambah bandwidth", "Membuat website"], answer: "Menghubungkan jaringan" },
+            { question: "Apa itu IP Address?", options: ["Alamat perangkat jaringan", "Jenis kabel", "Server", "Bahasa pemrograman"], answer: "Alamat perangkat jaringan" },
+            { question: "Apa itu LAN?", options: ["Jaringan lokal", "Internet", "Server", "Router"], answer: "Jaringan lokal" },
+            { question: "Apa fungsi switch?", options: ["Menghubungkan perangkat dalam jaringan", "Memutus jaringan", "Menyimpan data", "Membuat program"], answer: "Menghubungkan perangkat dalam jaringan" },
+            { question: "Apa itu firewall?", options: ["Keamanan jaringan", "Server", "Bahasa pemrograman", "Database"], answer: "Keamanan jaringan" },
+            { question: "Jenis kabel jaringan?", options: ["UTP", "HDMI", "USB", "VGA"], answer: "UTP" },
+            { question: "Apa itu DNS?", options: ["Penerjemah nama domain", "Server", "Router", "IP Address"], answer: "Penerjemah nama domain" },
+            { question: "Apa itu MAC Address?", options: ["Alamat fisik perangkat", "Alamat IP", "Server", "Bahasa pemrograman"], answer: "Alamat fisik perangkat" },
+            { question: "Apa itu bandwidth?", options: ["Kapasitas data", "Kecepatan processor", "Memori", "Penyimpanan"], answer: "Kapasitas data" },
+            { question: "Apa itu protokol jaringan?", options: ["Aturan komunikasi data", "Jenis kabel", "Server", "Bahasa pemrograman"], answer: "Aturan komunikasi data" },
+            { question: "Apa fungsi modem?", options: ["Menghubungkan ke internet", "Menyimpan data", "Membuat program", "Memutus jaringan"], answer: "Menghubungkan ke internet" },
+            { question: "Apa itu topologi jaringan?", options: ["Bentuk jaringan", "Jenis kabel", "Server", "Bahasa pemrograman"], answer: "Bentuk jaringan" },
+            { question: "Jenis topologi jaringan?", options: ["Star", "Circle", "Square", "Rectangle"], answer: "Star" },
+            { question: "Apa itu Wi-Fi?", options: ["Jaringan nirkabel", "Kabel jaringan", "Server", "Router"], answer: "Jaringan nirkabel" },
+            { question: "Apa itu proxy?", options: ["Perantara jaringan", "Server", "Router", "Bahasa pemrograman"], answer: "Perantara jaringan" },
+            { question: "Apa itu VPN?", options: ["Jaringan pribadi virtual", "Server", "Router", "Bahasa pemrograman"], answer: "Jaringan pribadi virtual" },
+            { question: "Apa itu packet?", options: ["Data yang dikirimkan", "Jenis kabel", "Server", "Bahasa pemrograman"], answer: "Data yang dikirimkan" },
+            { question: "Apa itu subnet mask?", options: ["Pembagi jaringan", "Jenis kabel", "Server", "Bahasa pemrograman"], answer: "Pembagi jaringan" },
+            { question: "Apa fungsi DHCP?", options: ["Memberi IP otomatis", "Menghubungkan jaringan", "Menyimpan data", "Membuat program"], answer: "Memberi IP otomatis" },
+            { question: "Apa itu kabel UTP?", options: ["Kabel jaringan twisted pair", "Kabel listrik", "Kabel HDMI", "Kabel USB"], answer: "Kabel jaringan twisted pair" },
+          ],
+          akuntansi: [
+            { question: "Apa itu aset?", options: ["Harta perusahaan", "Utang perusahaan", "Modal", "Pendapatan"], answer: "Harta perusahaan" },
+            { question: "Perusahaan membeli perlengkapan senilai Rp. 5.000.000,00 Secara Tunai, Jurnal yang benar adalah?", options: ["Debit kas Rp. 5.000.000,00, Kredit Perlengkapan Rp. 5.000.000,00", "Debit Perlengkapan Rp5.000.000,00, Kredit Kas Rp5.000.000,00", "Debit Beban Rp5.000.000,00, Kredit Kas Rp5.000.000,00", "Debit Kas Rp5.000.000,00, Kredit Pendapatan Rp5.000.000,00"], answer: "Debit Perlengkapan Rp5.000.000,00, Kredit Kas Rp5.000.000,00" },
+            { question: "Apa itu modal?", options: ["Modal pemilik", "Utang", "Harta", "Pendapatan"], answer: "Modal pemilik" },
+            { question: "Apa yang termasuk aset lancar?", options: ["Kas", "Tanah", "Peralatan", "Bangunan"], answer: "Kas" },
+            { question: "Apa itu jurnal umum?", options: ["Catatan transaksi", "Laporan keuangan", "Neraca", "Modal"], answer: "Catatan transaksi" },
+            { question: "Apa itu laporan laba rugi?", options: ["Laporan keuntungan dan kerugian", "Neraca", "Jurnal umum", "Modal"], answer: "Laporan keuntungan dan kerugian" },
+            { question: "Apa itu neraca?", options: ["Laporan posisi keuangan", "Laporan laba rugi", "Jurnal umum", "Modal"], answer: "Laporan posisi keuangan" },
+            { question: "Apa itu pendapatan?", options: ["Uang yang diterima", "Utang", "Modal", "Aset"], answer: "Uang yang diterima" },
+            { question: "Apa itu biaya?", options: ["Pengeluaran perusahaan", "Pendapatan", "Modal", "Aset"], answer: "Pengeluaran perusahaan" },
+            { question: "Apa itu piutang?", options: ["Hutang yang harus diterima", "Hutang", "Modal", "Pendapatan"], answer: "Hutang yang harus diterima" },
+            { question: "Apa itu utang?", options: ["Kewajiban perusahaan", "Aset", "Modal", "Pendapatan"], answer: "Kewajiban perusahaan" },
+            { question: "Apa itu buku besar?", options: ["Rekap transaksi", "Jurnal umum", "Neraca", "Modal"], answer: "Rekap transaksi" },
+            { question: "Apa itu kas?", options: ["Uang tunai", "Piutang", "Utang", "Modal"], answer: "Uang tunai" },
+            { question: "Apa itu persediaan?", options: ["Barang dagangan", "Kas", "Utang", "Modal"], answer: "Barang dagangan" },
+            { question: "Apa itu depresiasi?", options: ["Penyusutan aset", "Pendapatan", "Biaya", "Modal"], answer: "Penyusutan aset" },
+            { question: "Apa itu saldo?", options: ["Jumlah uang", "Utang", "Modal", "Pendapatan"], answer: "Jumlah uang" },
+            { question: "Apa itu piutang dagang?", options: ["Hutang pelanggan", "Utang", "Modal", "Pendapatan"], answer: "Hutang pelanggan" },
+            { question: "Apa itu jurnal penyesuaian?", options: ["Penyesuaian transaksi", "Jurnal umum", "Neraca", "Modal"], answer: "Penyesuaian transaksi" },
+            { question: "Apa itu laba bersih?", options: ["Keuntungan setelah biaya", "Pendapatan", "Modal", "Aset"], answer: "Keuntungan setelah biaya" },
+            { question: "Apa itu laporan perubahan modal?", options: ["Laporan perubahan modal", "Neraca", "Jurnal umum", "Pendapatan"], answer: "Laporan perubahan modal" },
+          ],
+          umum: [
+            { question: "Apa ibu kota Indonesia?", options: ["Jakarta", "Bandung", "Surabaya", "Medan"], answer: "Jakarta" },
+            { question: "Pulau terbesar di Indonesia?", options: ["Kalimantan", "Jawa", "Sumatra", "Sulawesi"], answer: "Kalimantan" },
+            { question: "Bahasa resmi Indonesia?", options: ["Bahasa Indonesia", "Bahasa Jawa", "Bahasa Inggris", "Bahasa Sunda"], answer: "Bahasa Indonesia" },
+            { question: "Lambang negara Indonesia?", options: ["Garuda Pancasila", "Singa", "Elang", "Macan"], answer: "Garuda Pancasila" },
+            { question: "Hari kemerdekaan Indonesia?", options: ["17 Agustus 1945", "1 Januari 1945", "17 Agustus 1946", "1 Mei 1945"], answer: "17 Agustus 1945" },
+            { question: "Presiden pertama Indonesia?", options: ["Soekarno", "Soeharto", "Jokowi", "Habibie"], answer: "Soekarno" },
+            { question: "Mata uang Indonesia?", options: ["Rupiah", "Dollar", "Euro", "Yen"], answer: "Rupiah" },
+            { question: "Bendera Indonesia?", options: ["Merah Putih", "Merah Biru", "Hijau Kuning", "Hitam Putih"], answer: "Merah Putih" },
+            { question: "Gunung tertinggi di Indonesia?", options: ["Puncak Jaya", "Semeru", "Rinjani", "Kerinci"], answer: "Puncak Jaya" },
+            { question: "Laut di utara pulau Jawa?", options: ["Laut Jawa", "Laut Arafura", "Laut Banda", "Laut Sulawesi"], answer: "Laut Jawa" },
+            { question: "Hari pahlawan?", options: ["10 November", "17 Agustus", "1 Mei", "28 Oktober"], answer: "10 November" },
+            { question: "Pahlawan nasional?", options: ["Cut Nyak Dien", "R.A. Kartini", "Sukarno", "Habibie"], answer: "Cut Nyak Dien" },
+            { question: "Lagu kebangsaan Indonesia?", options: ["Indonesia Raya", "Tanah Airku", "Garuda Pancasila", "Bagimu Negeri"], answer: "Indonesia Raya" },
+            { question: "Sungai terpanjang di Indonesia?", options: ["Sungai Kapuas", "Sungai Musi", "Sungai Barito", "Sungai Batanghari"], answer: "Sungai Kapuas" },
+            { question: "Hari pendidikan nasional?", options: ["2 Mei", "17 Agustus", "10 November", "28 Oktober"], answer: "2 Mei" },
+            { question: "Bahasa daerah di Sumatera?", options: ["Minang", "Jawa", "Sunda", "Bali"], answer: "Minang" },
+            { question: "Kota industri di Jawa Barat?", options: ["Bekasi", "Bandung", "Bogor", "Depok"], answer: "Bekasi" },
+            { question: "Suku terbesar di Indonesia?", options: ["Jawa", "Batak", "Sunda", "Madura"], answer: "Jawa" },
+            { question: "Laut di sekitar Indonesia?", options: ["Laut Jawa", "Laut Hitam", "Laut Merah", "Laut Baltik"], answer: "Laut Jawa" },
+            { question: "Pulau yang terkenal dengan Komodo?", options: ["Pulau Komodo", "Pulau Bali", "Pulau Lombok", "Pulau Sumatra"], answer: "Pulau Komodo" },
+          ],
+        },
+        2: {
+          rpl: [         
+            { question: "Apa singkatan dari HTML?", options: ["Hyper Text Markup Language", "Hyper Transfer Marking Language", "High Text Machine Language", "Home Tool Markup Language"], answer: "Hyper Text Markup Language" },
+            { question: "Bahasa pemrograman yang biasa digunakan untuk membuat aplikasi Android adalah?", options: ["Java", "Python", "C++", "PHP"], answer: "Java" },
+            { question: "Apa fungsi dari tag <a> dalam HTML?", options: ["Menampilkan gambar", "Membuat hyperlink", "Menampilkan teks", "Mengatur style"], answer: "Membuat hyperlink" },
+            { question: "Struktur kendali 'if' dalam pemrograman digunakan untuk?", options: ["Perulangan", "Percabangan", "Deklarasi variabel", "Komentar"], answer: "Percabangan" },
+            { question: "Simbol '==' dalam pemrograman berarti?", options: ["Penugasan", "Perbandingan sama", "Lebih besar", "Tidak sama"], answer: "Perbandingan sama" },
+            { question: "CSS digunakan untuk?", options: ["Mengatur tampilan halaman", "Membuat struktur HTML", "Membuat program backend", "Menyimpan database"], answer: "Mengatur tampilan halaman" },
+            { question: "Manakah yang termasuk framework JavaScript?", options: ["React", "Java", "Python", "C++"], answer: "React" },
+            { question: "Fungsi utama dari database adalah?", options: ["Menyimpan data", "Menampilkan data", "Menghapus program", "Mengatur jaringan"], answer: "Menyimpan data" },
+            { question: "Bahasa SQL digunakan untuk?", options: ["Mengelola basis data", "Membuat tampilan", "Desain UI", "Komunikasi jaringan"], answer: "Mengelola basis data" },
+            { question: "Apa itu debugging dalam pemrograman?", options: ["Mencari dan memperbaiki kesalahan kode", "Menambahkan komentar", "Menghapus file", "Menulis ulang kode"], answer: "Mencari dan memperbaiki kesalahan kode" },
+            { question: "IDE adalah singkatan dari?", options: ["Integrated Development Environment", "Internal Data Execution", "Internet Download Extension", "Interface Design Element"], answer: "Integrated Development Environment" },
+            { question: "Bahasa pemrograman yang berbasis objek adalah?", options: ["Java", "HTML", "SQL", "CSS"], answer: "Java" },
+            { question: "HTML adalah bahasa untuk?", options: ["Membuat struktur halaman web", "Mengatur database", "Pemrograman aplikasi desktop", "Desain jaringan"], answer: "Membuat struktur halaman web" },
+            { question: "PHP umumnya digunakan untuk?", options: ["Pemrograman sisi server", "Desain UI", "Pemrograman robotik", "Desain jaringan"], answer: "Pemrograman sisi server" },
+            { question: "Javascript bekerja di sisi?", options: ["Client", "Server", "Database", "Router"], answer: "Client" },
+            { question: "Framework yang digunakan untuk backend adalah?", options: ["Laravel", "Bootstrap", "Vue.js", "React"], answer: "Laravel" },
+            { question: "Tool untuk mengelola versi kode adalah?", options: ["Git", "Chrome", "Apache", "Java"], answer: "Git" },
+            { question: "Bahasa pemrograman Python dikenal karena?", options: ["Sintaksnya sederhana", "Kompleksitas tinggi", "Kompilasi lambat", "UI yang indah"], answer: "Sintaksnya sederhana" },
+            { question: "Manakah tipe data dalam JavaScript?", options: ["Boolean", "Powerpoint", "Pixel", "Layer"], answer: "Boolean" },
+            { question: "Fungsi utama dari loop adalah?", options: ["Mengulang perintah", "Membuat file", "Menghapus variabel", "Mengatur tampilan"], answer: "Mengulang perintah" },
+            { question: "Apa hasil dari 2 + '2' di JavaScript?", options: ["22", "4", "Error", "2"], answer: "22" },
+            { question: "Kepanjangan dari API adalah?", options: ["Application Programming Interface", "Advanced Processing Input", "Auto Programming Integration", "Application Program Init"], answer: "Application Programming Interface" },
+            { question: "DOM dalam JavaScript adalah?", options: ["Document Object Model", "Data Operation Manager", "Design Object Map", "Database Output Module"], answer: "Document Object Model" },
+            { question: "Apa fungsi tag <img> dalam HTML?", options: ["Menampilkan gambar", "Menampilkan video", "Membuat tabel", "Menambahkan hyperlink"], answer: "Menampilkan gambar" },
+            { question: "Yang bukan termasuk elemen HTML adalah?", options: ["bold", "div", "h1", "p"], answer: "bold" },
+            { question: "Manakah browser engine dari Chrome?", options: ["Blink", "Gecko", "Webkit", "Trident"], answer: "Blink" },
+            { question: "Fungsi tombol 'Inspect' di browser adalah untuk?", options: ["Melihat struktur halaman web", "Menjalankan antivirus", "Mempercepat koneksi", "Menutup tab"], answer: "Melihat struktur halaman web" },
+            { question: "Bahasa pemrograman yang dikembangkan Google adalah?", options: ["Go", "Ruby", "Kotlin", "Swift"], answer: "Go" },
+            { question: "Untuk membuat layout web responsif digunakan?", options: ["Bootstrap", "MySQL", "JDK", "Nginx"], answer: "Bootstrap" },
+            { question: "npm biasa digunakan untuk mengelola?", options: ["Package di Node.js", "HTML file", "Desain grafis", "Router"], answer: "Package di Node.js" },
+            { question: "Apa itu bug dalam pemrograman?", options: ["Kesalahan dalam kode", "Perintah looping", "Instruksi logika", "Metode pencarian"], answer: "Kesalahan dalam kode" },
+            { question: "Bahasa pemrograman yang mudah dipelajari untuk pemula?", options: ["Python", "C", "Assembly", "Perl"], answer: "Python" },
+            { question: "Fungsi console.log() di JavaScript adalah?", options: ["Menampilkan output ke konsol", "Menghapus file", "Mengatur database", "Menampilkan popup"], answer: "Menampilkan output ke konsol" },
+            { question: "Tipe data array digunakan untuk?", options: ["Menyimpan kumpulan data", "Menampilkan grafik", "Menyimpan gambar", "Mengatur layout"], answer: "Menyimpan kumpulan data" },
+            { question: "Versi standar HTML terbaru saat ini adalah?", options: ["HTML5", "HTML4", "HTML6", "HTML3.2"], answer: "HTML5" }
+          ],
+          tkj: [
+            { question: "Apa fungsi dari switch dalam jaringan komputer?", options: ["Menghubungkan perangkat dalam jaringan lokal", "Menghubungkan internet ke komputer", "Mengatur tampilan layar", "Mengubah sinyal analog"], answer: "Menghubungkan perangkat dalam jaringan lokal" },
+            { question: "Kabel UTP digunakan untuk?", options: ["Koneksi jaringan LAN", "Siaran televisi", "Perangkat audio", "Pengisian daya"], answer: "Koneksi jaringan LAN" },
+            { question: "IP address digunakan untuk?", options: ["Mengidentifikasi perangkat dalam jaringan", "Mengatur font komputer", "Menambah daya listrik", "Mengelola aplikasi"], answer: "Mengidentifikasi perangkat dalam jaringan" },
+            { question: "Kepanjangan dari LAN adalah?", options: ["Local Area Network", "Large Area Network", "Low Access Network", "Local Analog Net"], answer: "Local Area Network" },
+            { question: "Protokol yang digunakan untuk mengakses situs web adalah?", options: ["HTTP", "FTP", "SMTP", "POP3"], answer: "HTTP" },
+            { question: "Manakah yang termasuk alat input?", options: ["Keyboard", "Monitor", "Speaker", "Proyektor"], answer: "Keyboard" },
+            { question: "Kepanjangan dari DNS adalah?", options: ["Domain Name System", "Data Network Source", "Digital Network Server", "Dynamic Node Service"], answer: "Domain Name System" },
+            { question: "Modem berfungsi untuk?", options: ["Menghubungkan ke internet", "Mencetak dokumen", "Memutar musik", "Menampilkan gambar"], answer: "Menghubungkan ke internet" },
+            { question: "Manakah alat untuk menghubungkan dua jaringan berbeda?", options: ["Router", "Switch", "Hub", "Repeater"], answer: "Router" },
+            { question: "Komponen utama dalam CPU adalah?", options: ["ALU, CU, Register", "RAM, CD, Monitor", "Mouse, Keyboard, Scanner", "Harddisk, Speaker, Fan"], answer: "ALU, CU, Register" },
+            { question: "Apa itu IP publik?", options: ["Alamat IP yang bisa diakses dari internet", "IP khusus sekolah", "Alamat lokal", "IP untuk printer"], answer: "Alamat IP yang bisa diakses dari internet" },
+            { question: "Perangkat jaringan yang digunakan untuk memperkuat sinyal adalah?", options: ["Repeater", "Switch", "Router", "Modem"], answer: "Repeater" },
+            { question: "Fungsi utama dari firewall adalah?", options: ["Melindungi jaringan dari ancaman luar", "Mendinginkan CPU", "Menambah kapasitas harddisk", "Membuka port USB"], answer: "Melindungi jaringan dari ancaman luar" },
+            { question: "Jenis topologi jaringan yang setiap perangkat terhubung ke pusat adalah?", options: ["Star", "Bus", "Ring", "Mesh"], answer: "Star" },
+            { question: "Manakah sistem operasi jaringan?", options: ["Windows Server", "Photoshop", "Excel", "SketchUp"], answer: "Windows Server" },
+            { question: "Apa kepanjangan dari FTP?", options: ["File Transfer Protocol", "Fast Transfer Program", "File Transfer Point", "Fast Transmission Port"], answer: "File Transfer Protocol" },
+            { question: "Apa fungsi dari command 'ping' di CMD?", options: ["Menguji koneksi ke alamat IP", "Mematikan komputer", "Menampilkan aplikasi", "Menghapus file"], answer: "Menguji koneksi ke alamat IP" },
+            { question: "Wireless LAN menggunakan teknologi?", options: ["Wi-Fi", "Bluetooth", "Infrared", "NFC"], answer: "Wi-Fi" },
+            { question: "Subnetting digunakan untuk?", options: ["Membagi jaringan menjadi lebih kecil", "Menghapus IP", "Menyimpan data", "Menambah RAM"], answer: "Membagi jaringan menjadi lebih kecil" },
+            { question: "Alat yang digunakan untuk crimping kabel jaringan?", options: ["Crimping tool", "Obeng", "Tang potong", "Cutter"], answer: "Crimping tool" },
+            { question: "Protokol yang digunakan untuk mengirim email adalah?", options: ["SMTP", "HTTP", "IPX", "FTP"], answer: "SMTP" },
+            { question: "Kabel straight digunakan untuk menghubungkan?", options: ["PC ke switch", "PC ke PC", "Router ke router", "Switch ke switch"], answer: "PC ke switch" },
+            { question: "Bitrate adalah satuan dari?", options: ["Kecepatan transfer data", "Kapasitas RAM", "Ukuran file", "Daya listrik"], answer: "Kecepatan transfer data" },
+            { question: "Kabel crossover digunakan untuk menghubungkan?", options: ["PC ke PC langsung", "PC ke printer", "PC ke router", "Monitor ke CPU"], answer: "PC ke PC langsung" },
+            { question: "Apa itu MAC address?", options: ["Alamat fisik perangkat jaringan", "Alamat email", "Alamat rumah", "Alamat IP dinamis"], answer: "Alamat fisik perangkat jaringan" },
+            { question: "Satuan kecepatan internet Mbps berarti?", options: ["Megabit per second", "Mega byte per second", "Mega pixel per second", "Memory bit speed"], answer: "Megabit per second" },
+            { question: "Fungsi utama DHCP server adalah?", options: ["Memberikan IP secara otomatis", "Memblokir website", "Menyimpan dokumen", "Memutar video"], answer: "Memberikan IP secara otomatis" },
+            { question: "Apa itu SSID dalam jaringan Wi-Fi?", options: ["Nama jaringan Wi-Fi", "Alamat IP Wi-Fi", "Kecepatan jaringan", "Port jaringan"], answer: "Nama jaringan Wi-Fi" },
+            { question: "Perangkat yang berfungsi sebagai server harus memiliki?", options: ["Spesifikasi tinggi dan stabil", "Layar besar", "Printer", "Kamera"], answer: "Spesifikasi tinggi dan stabil" },
+            { question: "Jika kabel LAN putus, maka koneksi akan?", options: ["Terputus", "Lebih cepat", "Lebih aman", "Tetap stabil"], answer: "Terputus" },
+            { question: "Berapa jumlah pin pada konektor RJ-45?", options: ["8", "4", "6", "10"], answer: "8" },
+            { question: "Alat yang digunakan untuk menguji kabel jaringan adalah?", options: ["LAN tester", "Mouse tester", "Network scanner", "Cable blower"], answer: "LAN tester" },
+            { question: "Apa fungsi IP statis?", options: ["Alamat IP tetap", "Berubah secara otomatis", "Hanya untuk server email", "Digunakan printer"], answer: "Alamat IP tetap" },
+            { question: "Wireless Access Point (WAP) digunakan untuk?", options: ["Menyediakan sinyal Wi-Fi", "Menghapus virus", "Menambah RAM", "Menyimpan file"], answer: "Menyediakan sinyal Wi-Fi" }
+          ],
+          akutansi: [
+            { question: "Apa yang dimaksud dengan akuntansi?", options: ["Proses mencatat dan mengelola keuangan", "Ilmu menghitung luas tanah", "Teknik mengelola data jaringan", "Seni membuat poster"], answer: "Proses mencatat dan mengelola keuangan" },
+            { question: "Buku besar digunakan untuk?", options: ["Mencatat transaksi yang sudah diklasifikasikan", "Menyimpan data pelanggan", "Membuat grafik", "Menyimpan file digital"], answer: "Mencatat transaksi yang sudah diklasifikasikan" },
+            { question: "Istilah 'debit' dalam akuntansi berarti?", options: ["Pencatatan sebelah kiri", "Pencatatan sebelah kanan", "Penjumlahan kas", "Pencatatan utang"], answer: "Pencatatan sebelah kiri" },
+            { question: "Transaksi membeli barang dagang termasuk ke dalam?", options: ["Transaksi eksternal", "Transaksi internal", "Transaksi non-keuangan", "Transaksi fiktif"], answer: "Transaksi eksternal" },
+            { question: "Saldo awal kas terdapat dalam akun?", options: ["Aset lancar", "Aset tetap", "Kewajiban", "Ekuitas"], answer: "Aset lancar" },
+            { question: "Contoh akun pendapatan adalah?", options: ["Penjualan", "Utang usaha", "Kas", "Persediaan"], answer: "Penjualan" },
+            { question: "Jurnal umum berfungsi untuk?", options: ["Mencatat semua transaksi keuangan secara kronologis", "Menulis cerita", "Menyimpan kontak", "Mengatur jaringan"], answer: "Mencatat semua transaksi keuangan secara kronologis" },
+            { question: "Aset tetap contohnya adalah?", options: ["Gedung", "Uang tunai", "Barang habis pakai", "Perlengkapan"], answer: "Gedung" },
+            { question: "Piutang adalah?", options: ["Uang yang harus diterima dari pelanggan", "Utang yang harus dibayar", "Uang kas", "Barang dagangan"], answer: "Uang yang harus diterima dari pelanggan" },
+            { question: "Peralatan kantor dicatat sebagai?", options: ["Aset tetap", "Beban", "Pendapatan", "Kewajiban"], answer: "Aset tetap" },
+            { question: "Kewajiban perusahaan terhadap pihak ketiga disebut?", options: ["Utang", "Modal", "Aset", "Pendapatan"], answer: "Utang" },
+            { question: "Modal adalah hak?", options: ["Pemilik terhadap kekayaan perusahaan", "Pelanggan terhadap barang", "Karyawan terhadap gaji", "Pemasok terhadap bahan"], answer: "Pemilik terhadap kekayaan perusahaan" },
+            { question: "Jika kas bertambah, maka dicatat di sisi?", options: ["Debit", "Kredit", "Beban", "Utang"], answer: "Debit" },
+            { question: "Jika perusahaan membeli perlengkapan secara tunai, maka akun yang bertambah adalah?", options: ["Perlengkapan", "Utang", "Piutang", "Pendapatan"], answer: "Perlengkapan" },
+            { question: "Contoh beban adalah?", options: ["Gaji", "Penjualan", "Peralatan", "Modal"], answer: "Gaji" },
+            { question: "Persamaan dasar akuntansi adalah?", options: ["Aset = Utang + Modal", "Utang = Aset + Modal", "Modal = Aset - Utang", "Pendapatan = Beban - Utang"], answer: "Aset = Utang + Modal" },
+            { question: "Sistem pencatatan akuntansi yang umum digunakan adalah?", options: ["Double Entry", "Single Note", "Triple Note", "Basic Cash"], answer: "Double Entry" },
+            { question: "Jurnal yang digunakan untuk transaksi khusus pembelian disebut?", options: ["Jurnal pembelian", "Jurnal penjualan", "Jurnal umum", "Jurnal pengeluaran"], answer: "Jurnal pembelian" },
+            { question: "Laporan keuangan yang menunjukkan posisi keuangan adalah?", options: ["Neraca", "Laporan laba rugi", "Jurnal", "Faktur"], answer: "Neraca" },
+            { question: "Neraca memiliki tiga unsur utama, yaitu?", options: ["Aset, utang, modal", "Pendapatan, beban, kas", "Barang, jasa, pajak", "Utang, kas, beban"], answer: "Aset, utang, modal" },
+            { question: "Laporan laba rugi menunjukkan?", options: ["Pendapatan dan beban", "Jumlah aset", "Modal pemilik", "Persediaan barang"], answer: "Pendapatan dan beban" },
+            { question: "Contoh dokumen sumber dalam akuntansi adalah?", options: ["Nota pembelian", "KTP", "Surat lamaran", "Iklan"], answer: "Nota pembelian" },
+            { question: "Jika utang bertambah, maka dicatat di sisi?", options: ["Kredit", "Debit", "Beban", "Pendapatan"], answer: "Kredit" },
+            { question: "Apa fungsi dari neraca saldo?", options: ["Mengecek keseimbangan debit dan kredit", "Menyusun jurnal umum", "Menentukan harga jual", "Menentukan stok barang"], answer: "Mengecek keseimbangan debit dan kredit" },
+            { question: "Barang dagang adalah?", options: ["Barang yang dijual kembali", "Barang habis pakai", "Barang untuk promosi", "Barang milik karyawan"], answer: "Barang yang dijual kembali" },
+            { question: "Sumber modal bisa berasal dari?", options: ["Pemilik", "Utang", "Hibah", "Semua benar"], answer: "Semua benar" },
+            { question: "Kegiatan menjual barang disebut juga sebagai?", options: ["Penjualan", "Pembelian", "Pengeluaran", "Pengembalian"], answer: "Penjualan" },
+            { question: "Jurnal penyesuaian digunakan untuk?", options: ["Menyesuaikan akun dengan kondisi akhir periode", "Menambah modal", "Menghapus utang", "Mengubah saldo kas"], answer: "Menyesuaikan akun dengan kondisi akhir periode" },
+            { question: "Yang termasuk ke dalam kelompok beban usaha adalah?", options: ["Beban listrik", "Utang usaha", "Kas", "Piutang dagang"], answer: "Beban listrik" },
+            { question: "Jika modal bertambah, maka dicatat di sisi?", options: ["Kredit", "Debit", "Piutang", "Utang"], answer: "Kredit" },
+            { question: "Faktur penjualan biasanya diterbitkan oleh?", options: ["Penjual", "Pembeli", "Bank", "Gudang"], answer: "Penjual" },
+            { question: "Akuntansi membantu perusahaan dalam?", options: ["Mengambil keputusan keuangan", "Menggambar logo", "Memprogram aplikasi", "Menulis puisi"], answer: "Mengambil keputusan keuangan" },
+            { question: "Jika beban lebih besar dari pendapatan maka hasilnya adalah?", options: ["Rugi", "Laba", "Imbang", "Surplus"], answer: "Rugi" },
+            { question: "Pajak termasuk dalam kategori?", options: ["Beban", "Aset", "Pendapatan", "Modal"], answer: "Beban" }
+          ],
+          umum: [
+            { question: "Negara manakah yang memiliki piramida Giza?", options: ["Mesir", "Yunani", "Italia", "India"], answer: "Mesir" },
+            { question: "Planet terdekat dengan matahari adalah?", options: ["Merkurius", "Venus", "Bumi", "Mars"], answer: "Merkurius" },
+            { question: "Apa nama ibu kota provinsi Jawa Barat?", options: ["Bandung", "Bogor", "Bekasi", "Cirebon"], answer: "Bandung" },
+            { question: "Zat yang digunakan tumbuhan untuk fotosintesis?", options: ["Klorofil", "Karbon", "Nitrogen", "Oksigen"], answer: "Klorofil" },
+            { question: "Lambang negara Indonesia adalah?", options: ["Garuda Pancasila", "Bendera Merah Putih", "Peta Indonesia", "Burung Cendrawasih"], answer: "Garuda Pancasila" },
+            { question: "Kapan proklamasi kemerdekaan Indonesia?", options: ["17 Agustus 1945", "20 Mei 1945", "10 November 1945", "1 Juni 1945"], answer: "17 Agustus 1945" },
+            { question: "Alat musik angklung berasal dari daerah?", options: ["Jawa Barat", "Bali", "Sumatera", "Sulawesi"], answer: "Jawa Barat" },
+            { question: "Hewan yang berkembang biak dengan bertelur disebut?", options: ["Ovipar", "Vivipar", "Ovovivipar", "Vertebrata"], answer: "Ovipar" },
+            { question: "Apa nama lambang kimia dari air?", options: ["H2O", "O2", "CO2", "NaCl"], answer: "H2O" },
+            { question: "Benua terbesar di dunia adalah?", options: ["Asia", "Afrika", "Amerika", "Australia"], answer: "Asia" },
+            { question: "Berapa jumlah provinsi di Indonesia per tahun 2023?", options: ["38", "34", "40", "36"], answer: "38" },
+            { question: "Lagu Indonesia Raya diciptakan oleh?", options: ["W.R. Supratman", "Ki Hajar Dewantara", "Bung Karno", "Ismail Marzuki"], answer: "W.R. Supratman" },
+            { question: "Sel surya digunakan untuk mengubah energi?", options: ["Matahari menjadi listrik", "Listrik menjadi panas", "Air menjadi uap", "Panas menjadi bunyi"], answer: "Matahari menjadi listrik" },
+            { question: "Satuan SI untuk panjang adalah?", options: ["Meter", "Liter", "Gram", "Watt"], answer: "Meter" },
+            { question: "Apa nama ibukota Jepang?", options: ["Tokyo", "Seoul", "Kyoto", "Osaka"], answer: "Tokyo" },
+            { question: "Orang yang meneliti gejala sosial disebut?", options: ["Sosiolog", "Fisikawan", "Dokter", "Sejarawan"], answer: "Sosiolog" },
+            { question: "Gunung tertinggi di Indonesia adalah?", options: ["Puncak Jaya", "Semeru", "Kerinci", "Merapi"], answer: "Puncak Jaya" },
+            { question: "Kegiatan jual beli antara negara disebut?", options: ["Perdagangan internasional", "Ekspor lokal", "Ekonomi mikro", "Ekonomi rumah tangga"], answer: "Perdagangan internasional" },
+            { question: "Bahasa pemrograman Python termasuk jenis?", options: ["Tingkat tinggi", "Tingkat rendah", "Bahasa mesin", "Bahasa rakitan"], answer: "Tingkat tinggi" },
+            { question: "Warna sekunder dihasilkan dari campuran warna?", options: ["Primer", "Tersier", "Netral", "Abu-abu"], answer: "Primer" },
+            { question: "Bagian tumbuhan tempat berlangsungnya fotosintesis adalah?", options: ["Daun", "Akar", "Batang", "Bunga"], answer: "Daun" },
+            { question: "Negara dengan jumlah penduduk terbanyak di dunia adalah?", options: ["Tiongkok", "India", "Amerika Serikat", "Indonesia"], answer: "Tiongkok" },
+            { question: "Pancasila adalah dasar negara yang memiliki jumlah sila?", options: ["5", "4", "6", "3"], answer: "5" },
+            { question: "Garis imajiner yang membagi bumi menjadi utara dan selatan adalah?", options: ["Khatulistiwa", "Lintang", "Bujur", "Kutub"], answer: "Khatulistiwa" },
+            { question: "Manakah dari berikut ini contoh sumber daya alam yang dapat diperbarui?", options: ["Air", "Minyak bumi", "Batubara", "Gas alam"], answer: "Air" },
+            { question: "Apa nama proses perubahan wujud padat menjadi gas?", options: ["Menyublim", "Mencair", "Mengembun", "Menguap"], answer: "Menyublim" },
+            { question: "Lembaga yang mengurusi hukum di Indonesia adalah?", options: ["MA", "KPU", "BI", "BPS"], answer: "MA" },
+            { question: "Contoh kegiatan produksi adalah?", options: ["Petani menanam padi", "Siswa belajar", "Ibu memasak", "Anak bermain"], answer: "Petani menanam padi" },
+            { question: "Zaman penjajahan Belanda di Indonesia berlangsung selama sekitar?", options: ["350 tahun", "100 tahun", "50 tahun", "200 tahun"], answer: "350 tahun" },
+            { question: "Energi yang digunakan dalam pembangkit listrik tenaga air adalah?", options: ["Kinetik air", "Panas bumi", "Cahaya matahari", "Gas"], answer: "Kinetik air" },
+            { question: "Apa nama alat ukur suhu?", options: ["Termometer", "Higrometer", "Anemometer", "Voltmeter"], answer: "Termometer" },
+            { question: "Ibu kota negara Thailand adalah?", options: ["Bangkok", "Hanoi", "Kuala Lumpur", "Manila"], answer: "Bangkok" },
+            { question: "Burung Garuda menggenggam pita bertuliskan?", options: ["Bhinneka Tunggal Ika", "Pancasila", "Garuda Indonesia", "Indonesia Raya"], answer: "Bhinneka Tunggal Ika" },
+            { question: "Pusat tata surya adalah?", options: ["Matahari", "Bumi", "Bulan", "Merkurius"], answer: "Matahari" }
+          ],
+        }
+        // Tambah level 2 dan 3 untuk kelas 10 jika perlu
+      },
+      // Tambah kelas 11 dan 12 jika ingin lengkap
+    };
+
+    let kuisAktif = [];
+    let current = 0;
+    let skor = 0;
+    let salah = 0;
+
+    function mulaiKuis() {
+      const kelas = document.getElementById("kelas").value;
+      const level = document.getElementById("level").value;
+      const kategori = document.getElementById("kategori").value;
+
+      if (soal[kelas] && soal[kelas][level] && soal[kelas][level][kategori]) {
+        kuisAktif = soal[kelas][level][kategori];
+      } else {
+        alert("Soal untuk pilihan tersebut belum tersedia.");
+        return;
+      }
+
+      current = 0;
+      skor = 0;
+      salah = 0;
+
+      document.getElementById("setup").style.display = "none";
+      document.getElementById("result").style.display = "none";
+      document.getElementById("quiz").style.display = "block";
+
+      tampilSoal();
+    }
+
+    function tampilSoal() {
+      const q = kuisAktif[current];
+
+      // Salin dan acak opsi jawaban
+      let opsi = [...q.options];
+      for (let i = opsi.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [opsi[i], opsi[j]] = [opsi[j], opsi[i]];
+      }
+
+      document.getElementById("question").textContent = q.question;
+      document.getElementById("options").innerHTML = opsi.map(opt =>
+        `<div class="option"><label><input type="radio" name="opt" value="${opt}"> ${opt}</label></div>`
+      ).join("");
+      document.getElementById("feedback").textContent = "";
+    }
+
+    function jawabDanLanjut() {
+      const pilihan = document.querySelector('input[name="opt"]:checked');
+      if (!pilihan) {
+        alert("Pilih jawaban terlebih dahulu!");
+        return;
+      }
+
+      const jawabanUser = pilihan.value;
+      const jawabanBenar = kuisAktif[current].answer;
+
+      if (jawabanUser === jawabanBenar) {
+        skor++;
+        document.getElementById("feedback").textContent = "Benar!";
+        document.getElementById("feedback").className = "feedback benar";
+      } else {
+        salah++;
+        document.getElementById("feedback").textContent = `Salah! Jawaban benar: ${jawabanBenar}`;
+        document.getElementById("feedback").className = "feedback salah";
+      }
+
+      // Disable pilihan setelah menjawab
+      const inputs = document.querySelectorAll('input[name="opt"]');
+      inputs.forEach(input => input.disabled = true);
+
+      // Ganti tombol lanjut menjadi tombol soal berikutnya jika masih ada soal
+      const btn = document.querySelector("#quiz button");
+      btn.disabled = true;
+
+      setTimeout(() => {
+        current++;
+        if (current < kuisAktif.length) {
+          tampilSoal();
+          btn.disabled = false;
+        } else {
+          tampilkanHasil();
+        }
+      }, 1500);
+    }
+
+    function tampilkanHasil() {
+      document.getElementById("quiz").style.display = "none";
+      document.getElementById("result").style.display = "block";
+
+      document.getElementById("scoreBenar").textContent = skor;
+      document.getElementById("scoreSalah").textContent = salah;
+      document.getElementById("scoreTotal").textContent = skor + salah;
+      document.getElementById("scoreJumlah").textContent = kuisAktif.length;
+    }
+
+    function ulang() {
+      document.getElementById("result").style.display = "none";
+      document.getElementById("setup").style.display = "block";
+    }
+
+    const btnJawabLanjut = document.getElementById('btnJawabLanjut');
+const jawabanInputs = document.querySelectorAll('input[name="jawaban"]');
+
+// Disable tombol saat soal baru muncul
+function resetTombol() {
+  btnJawabLanjut.disabled = true;
+  btnJawabLanjut.textContent = 'Jawab & Lanjut';
+}
+
+// Event listener untuk enable tombol saat user pilih jawaban
+jawabanInputs.forEach(input => {
+  input.addEventListener('change', () => {
+    btnJawabLanjut.disabled = false;
+  });
+});
+
+// Panggil resetTombol saat menampilkan soal baru
+function tampilkanSoal(soal) {
+  // ... kode tampilkan soal dan jawaban ...
+
+  // Reset pilihan jawaban (uncheck semua)
+  jawabanInputs.forEach(input => {
+    input.checked = false;
+  });
+
+  resetTombol();
+}
+  </script>
+</body>
+</html>
